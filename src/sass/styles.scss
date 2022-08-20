@@ -1,0 +1,18 @@
+// =============================================================================
+// Main
+// =============================================================================
+
+// Settings
+@import 'settings/settings.colors';
+@import 'settings/settings.global';
+
+// Generic
+@import 'normalize'; // Imported globally from node modules using sass-loader include path at compilation
+@import 'generic/generic.box-sizing';
+@import 'generic/generic.reset';
+
+// Elements
+@import 'elements/elements.page';
+
+// Components
+@import 'components/components.loader';
