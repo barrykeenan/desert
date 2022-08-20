@@ -1,10 +1,11 @@
-import { MathUtils, Vector3, Box3, Scene, TextureLoader, LoadingManager } from 'three';
+import { MathUtils, Vector3, Box3, Scene, TextureLoader, LoadingManager, AxesHelper } from 'three';
 
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 import { LoadingScreen } from './components/loading-screen.js';
-import { Toaster } from './components/toaster.js';
+import { Ground1 } from './components/ground1.js';
 import { ShadowCatcher } from './components/shadow-catcher';
 import { Lights } from './components/lights';
 
@@ -17,8 +18,11 @@ class SceneManager {
         this.materials = {};
         this.pickableMeshes = [];
 
-        this.objLoader = new OBJLoader(this.loadingManager);
-        this.objLoader.setPath('assets/');
+        // this.objLoader = new OBJLoader(this.loadingManager);
+        // this.objLoader.setPath('assets/');
+
+        this.fbxLoader = new FBXLoader(this.loadingManager);
+        this.fbxLoader.setPath('assets/');
 
         this.textureLoader = new TextureLoader(this.loadingManager);
         this.textureLoader.setPath('assets/');
@@ -37,10 +41,10 @@ class SceneManager {
         orbitControls.enablePan = false;
 
         // Vertical orbit limits.
-        orbitControls.minPolarAngle = MathUtils.degToRad(30);
-        orbitControls.maxPolarAngle = MathUtils.degToRad(120);
+        orbitControls.minPolarAngle = MathUtils.degToRad(40);
+        orbitControls.maxPolarAngle = MathUtils.degToRad(75);
 
-        orbitControls.autoRotate = true;
+        orbitControls.autoRotate = false;
         orbitControls.enableDamping = true;
 
         return orbitControls;
@@ -49,7 +53,16 @@ class SceneManager {
     /**
      * Add objects to the scene
      */
-    addObjects() {}
+    addObjects() {
+        const axesHelper = new AxesHelper(5);
+        this.scene.add(axesHelper);
+
+        this.ground1 = new Ground1(this.fbxLoader, this.textureLoader);
+        this.scene.add(this.ground1.rootObject);
+
+        // this.shadowCatcher = new ShadowCatcher(this.textureLoader);
+        // this.scene.add(this.shadowCatcher.rootObject);
+    }
 
     initComponents() {
         this.loadingScreen = new LoadingScreen();
@@ -60,7 +73,7 @@ class SceneManager {
     }
 
     onLoad() {
-        this.fitCameraToSelection(this.camera, this.orbitControls, this.toaster.rootObject.children);
+        // this.fitCameraToSelection(this.camera, this.orbitControls, this.ground1.rootObject.children);
 
         this.loadingScreen.hide();
     }
@@ -70,7 +83,7 @@ class SceneManager {
      */
     update() {
         this.orbitControls.update();
-        this.toaster.update();
+        // this.ground1.update();
     }
 
     fitCameraToSelection(camera, controls, selection, fitOffset = 1.1) {
