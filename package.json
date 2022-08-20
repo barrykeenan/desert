@@ -11,6 +11,7 @@
         "start": "webpack serve --mode development"
     },
     "dependencies": {
+        "dat.gui": "^0.7.9",
         "normalize.css": "^8.0.1",
         "three": "^0.143.0"
     },

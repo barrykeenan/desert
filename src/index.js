@@ -6,19 +6,18 @@ import { initStats } from './components/stats.js';
 import { initRenderer } from './components/renderer.js';
 import { initCamera } from './components/camera.js';
 import { SceneManager } from './sceneManager.js';
-// import { Controls } from './components/controls.js';
+import { SettingsPanel } from './components/settings-panel.js';
 
 // initComponents
 const stats = initStats();
 const renderer = initRenderer();
 // TODO: fit camera method here?
-const camera = initCamera(new Vector3(-20, 22, 62));
+const camera = initCamera(new Vector3(0, 150, 0));
 
 const sceneManager = new SceneManager(renderer, camera);
 // const scene = sceneManager.scene;
 
-// const controls = new Controls(camera, sceneManager, orbitControls);
-
+const settingsPanel = new SettingsPanel(camera, sceneManager);
 
 bindEvents();
 
