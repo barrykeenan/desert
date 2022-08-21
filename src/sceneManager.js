@@ -1,13 +1,28 @@
-import { MathUtils, Vector3, Box3, Scene, TextureLoader, LoadingManager, AxesHelper } from 'three';
+import {
+    MathUtils,
+    Vector3,
+    Box3,
+    Scene,
+    TextureLoader,
+    LoadingManager,
+    GridHelper,
+    AxesHelper,
+    PlaneGeometry,
+    MeshStandardMaterial,
+    Mesh,
+} from 'three';
 
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
+import { EXRLoader } from 'three/examples/jsm/loaders/EXRLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 import { LoadingScreen } from './components/loading-screen.js';
-import { Ground1 } from './components/ground1.js';
 import { ShadowCatcher } from './components/shadow-catcher';
 import { Lights } from './components/lights';
+
+import { Ground1 } from './scene/ground1.js';
+import { Cube } from './scene/cube.js';
 
 class SceneManager {
     constructor(renderer, camera) {
@@ -18,8 +33,8 @@ class SceneManager {
         this.materials = {};
         this.pickableMeshes = [];
 
-        // this.objLoader = new OBJLoader(this.loadingManager);
-        // this.objLoader.setPath('assets/');
+        this.objLoader = new OBJLoader(this.loadingManager);
+        this.objLoader.setPath('assets/');
 
         this.fbxLoader = new FBXLoader(this.loadingManager);
         this.fbxLoader.setPath('assets/');
@@ -27,10 +42,13 @@ class SceneManager {
         this.textureLoader = new TextureLoader(this.loadingManager);
         this.textureLoader.setPath('assets/');
 
+        this.exrLoader = new EXRLoader(this.loadingManager);
+        this.exrLoader.setPath('assets/');
+
         this.orbitControls = this.initControls();
 
         this.addObjects();
-        this.lights = new Lights(this.scene, this.textureLoader);
+        this.lights = new Lights(this.scene, this.exrLoader);
 
         this.initComponents();
         this.bindEvents();
@@ -41,8 +59,8 @@ class SceneManager {
         orbitControls.enablePan = false;
 
         // Vertical orbit limits.
-        orbitControls.minPolarAngle = MathUtils.degToRad(40);
-        orbitControls.maxPolarAngle = MathUtils.degToRad(75);
+        orbitControls.minPolarAngle = MathUtils.degToRad(30); // 0 is looking straight down.
+        orbitControls.maxPolarAngle = MathUtils.degToRad(80); // 90 is horizontal to ground
 
         orbitControls.autoRotate = false;
         orbitControls.enableDamping = true;
@@ -54,11 +72,30 @@ class SceneManager {
      * Add objects to the scene
      */
     addObjects() {
-        const axesHelper = new AxesHelper(5);
+        const helper = new GridHelper(500, 10);
+        helper.material.transparent = true;
+        helper.material.opacity = 0.25;
+        this.scene.add(helper);
+
+        const axesHelper = new AxesHelper(10);
         this.scene.add(axesHelper);
 
         this.ground1 = new Ground1(this.fbxLoader, this.textureLoader);
         this.scene.add(this.ground1.rootObject);
+
+        // this.cube = new Cube(this.objLoader, this.textureLoader);
+        // this.cube.rootObject.position.z = -100;
+        // this.cube.rootObject.position.y = 50;
+        // this.cube.rootObject.position.x = 100;
+        // this.scene.add(this.cube.rootObject);
+
+        //Create a plane that receives shadows (but does not cast them)
+        // const planeGeometry = new PlaneGeometry(500, 500);
+        // planeGeometry.rotateX(-Math.PI / 2);
+        // const planeMaterial = new MeshStandardMaterial({ color: 0xcccccc });
+        // const plane = new Mesh(planeGeometry, planeMaterial);
+        // plane.receiveShadow = true;
+        // this.scene.add(plane);
 
         // this.shadowCatcher = new ShadowCatcher(this.textureLoader);
         // this.scene.add(this.shadowCatcher.rootObject);
