@@ -41,41 +41,6 @@ class SettingsPanel {
             lightsFolder.open();
         }
 
-        const pivotRotate = this.scene.getObjectByName('pivotRotate');
-        if (pivotRotate) {
-            this.gui
-                .add(pivotRotate.rotation, 'y', -MathUtils.degToRad(360), MathUtils.degToRad(360))
-                .name('rotate y')
-                .step(0.001);
-
-            const pivotHeight = this.scene.getObjectByName('pivotHeight');
-            this.gui.add(pivotHeight.rotation, 'x', 0, MathUtils.degToRad(360)).name('height').step(0.001);
-
-            const lightArm = this.scene.getObjectByName('lightArm');
-            this.gui.add(lightArm.position, 'y', 150, 500).name('arm distance');
-
-            const spotLight = this.scene.getObjectByName('spotLight1');
-
-            const lightControls = new (function () {
-                this.pointColor = spotLight.color.getStyle();
-            })();
-
-            this.gui.addColor(lightControls, 'pointColor').onChange(function (e) {
-                spotLight.color = new Color(e);
-            });
-            this.gui.add(spotLight, 'intensity', 1000, 100000).step(1000);
-            this.gui.add(spotLight, 'angle', 0, Math.PI * 2).step(0.1);
-            this.gui.add(spotLight, 'penumbra', 0, 1).step(0.01);
-            this.gui.add(spotLight, 'castShadow', true);
-            this.gui
-                .add(spotLight.shadow.camera, 'near', 400, 500)
-                .onChange(() => spotLight.shadow.camera.updateProjectionMatrix());
-            this.gui
-                .add(spotLight.shadow.camera, 'far', 500, 1000)
-                .onChange(() => spotLight.shadow.camera.updateProjectionMatrix());
-            this.gui.add(spotLight.shadow, 'focus', 0, 10);
-        }
-
         const debugFolder = this.gui.addFolder('Debug');
         debugFolder.add(this, 'outputObjects');
         debugFolder.add(window, 'innerWidth').listen();
