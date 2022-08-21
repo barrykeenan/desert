@@ -20,7 +20,7 @@ class Ground1 {
             normalMap: this.textureLoader.load('models/ground1/textures/vmoebgzqx_4K_Normal_LOD0.jpg'),
             roughnessMap: this.textureLoader.load('models/ground1/textures/vmoebgzqx_4K_Roughness.jpg'),
             map: this.textureLoader.load('models/ground1/textures/vmoebgzqx_4K_Albedo.jpg'),
-            // envMapIntensity: 0.5,
+            envMapIntensity: 0.1, // less at night
         });
         this.materials.default.map.encoding = sRGBEncoding;
     }
