@@ -18,7 +18,6 @@ import { EXRLoader } from 'three/examples/jsm/loaders/EXRLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 import { LoadingScreen } from './components/loading-screen.js';
-import { ShadowCatcher } from './components/shadow-catcher';
 import { Lights } from './components/lights';
 
 import { Ground1 } from './scene/ground1.js';
