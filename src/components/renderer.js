@@ -7,7 +7,7 @@ import { WebGLRenderer, PCFSoftShadowMap, ACESFilmicToneMapping, sRGBEncoding } 
  */
 export function initRenderer(additionalProperties) {
     const renderer = new WebGLRenderer({
-        powerPreference: "high-performance",
+        powerPreference: 'high-performance',
         alpha: true,
         // antialias: true, // perf hit mobile
     });
@@ -20,8 +20,9 @@ export function initRenderer(additionalProperties) {
     renderer.shadowMap.type = PCFSoftShadowMap;
     renderer.physicallyCorrectLights = true;
 
-    renderer.toneMapping = ACESFilmicToneMapping;
-    renderer.gammaFactor = 2.2;
+    // renderer.toneMapping = ACESFilmicToneMapping;
+    // renderer.toneMappingExposure = 0.2;
+    // renderer.gammaFactor = 2.2;
     renderer.outputEncoding = sRGBEncoding;
 
     // TODO if dom element param, otherwise document.body.appendChild(renderer.domElement)
