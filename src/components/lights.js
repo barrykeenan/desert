@@ -38,7 +38,7 @@ class Lights {
         keyLight.color = new Color('rgb(255, 245, 200)');
         keyLight.intensity = 9;
 
-        keyLight.position.set(-100, 500, -1000);
+        keyLight.position.set(-500, 250, -1000);
         keyLight.target.position.set(0, 0, 0);
 
         keyLight.castShadow = true;

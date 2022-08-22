@@ -55,6 +55,9 @@ class SceneManager {
 
     initControls() {
         const orbitControls = new OrbitControls(this.camera, this.renderer.domElement);
+
+        orbitControls.target = new Vector3(0, 20, 0);
+
         orbitControls.enablePan = false;
 
         // Vertical orbit limits.

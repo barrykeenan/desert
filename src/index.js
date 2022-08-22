@@ -12,7 +12,7 @@ import { SettingsPanel } from './components/settings-panel.js';
 const stats = initStats();
 const renderer = initRenderer();
 // TODO: fit camera method here?
-const camera = initCamera(new Vector3(0, 150, 200));
+const camera = initCamera(new Vector3(0, 80, 150));
 
 const sceneManager = new SceneManager(renderer, camera);
 // const scene = sceneManager.scene;
