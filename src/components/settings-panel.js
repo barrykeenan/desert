@@ -24,28 +24,28 @@ class SettingsPanel {
         const keyLight = this.scene.getObjectByName('keyLight');
         const keyLightHelper = this.scene.getObjectByName('keyLight-helper');
         if (keyLight) {
-            const lightsFolder = this.gui.addFolder('Lights');
+            const lightsFolder = this.gui.addFolder('Key light');
 
-            lightsFolder.add(keyLight, 'intensity', 0, 10, 0.1);
+            // lightsFolder.add(keyLight, 'intensity', 0, 10, 0.1);
 
             lightsFolder.add(keyLight.position, 'x', -1000, 1000).onChange(() => {
                 this.updateLight(keyLight, keyLightHelper);
             });
-            lightsFolder.add(keyLight.position, 'y', 0, 1000).onChange(() => {
+            lightsFolder.add(keyLight.position, 'y', 100, 1000).onChange(() => {
                 this.updateLight(keyLight, keyLightHelper);
             });
-            lightsFolder.add(keyLight.position, 'z', -1000, 1000).onChange(() => {
-                this.updateLight(keyLight, keyLightHelper);
-            });
+            // lightsFolder.add(keyLight.position, 'z', -1000, 1000).onChange(() => {
+            //     this.updateLight(keyLight, keyLightHelper);
+            // });
 
             lightsFolder.open();
         }
 
-        const debugFolder = this.gui.addFolder('Debug');
-        debugFolder.add(this, 'outputObjects');
-        debugFolder.add(window, 'innerWidth').listen();
-        debugFolder.add(window, 'innerHeight').listen();
-        debugFolder.add(window, 'devicePixelRatio').listen();
+        // const debugFolder = this.gui.addFolder('Debug');
+        // debugFolder.add(this, 'outputObjects');
+        // debugFolder.add(window, 'innerWidth').listen();
+        // debugFolder.add(window, 'innerHeight').listen();
+        // debugFolder.add(window, 'devicePixelRatio').listen();
         // debugFolder.open();
     }
 
