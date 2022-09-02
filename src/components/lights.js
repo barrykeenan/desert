@@ -2,13 +2,14 @@ import {
     EquirectangularReflectionMapping,
     sRGBEncoding,
     Color,
+    Group,
+    MathUtils,
     DirectionalLight,
     DirectionalLightHelper,
     SpotLight,
     SpotLightHelper,
     CameraHelper,
-    Group,
-    MathUtils,
+    HemisphereLight,
 } from 'three';
 
 class Lights {
@@ -18,6 +19,7 @@ class Lights {
         this.gizmo = gizmo;
 
         this.environmentMap();
+        this.skyLight();
         this.keyLight();
     }
 
@@ -29,6 +31,20 @@ class Lights {
             this.scene.environment = tx;
             this.scene.background = tx; // skybox
         });
+    }
+
+    skyLight() {
+        const skyLight = new HemisphereLight();
+        skyLight.name = 'skyLight';
+
+        // this.skyLightColour = { h: 195, s: 0.9, v: 0.8 };
+        // this.groundLightColour = { h: 27, s: 0.5, v: 0.6 };
+
+        skyLight.color = new Color('hsl(195, 90%, 80%)');
+        skyLight.groundColor = new Color('hsl(27, 50%, 60%)');
+        skyLight.intensity = 0.1;
+
+        this.scene.add(skyLight);
     }
 
     keyLight() {
