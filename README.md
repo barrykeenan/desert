@@ -1,3 +1,17 @@
+Requirements
+------------
+
+    nvm 0.39.1
+    node v17.3.1
+    npm 8.3.0
+
+Install
+-------
+
+    npm install --global yarn
+
+    yarn install
+
 Working
 -------
 
