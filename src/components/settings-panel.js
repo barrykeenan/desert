@@ -11,6 +11,7 @@ class SettingsPanel {
         this.gui = new dat.GUI();
 
         this.time = 0;
+        this.keyLightColour = { h: 50, s: 0.25, v: 0.9 };
 
         const mapRange = (value, x1, y1, x2, y2) => ((value - x1) * (y2 - x2)) / (y1 - x1) + x2;
 
@@ -34,6 +35,18 @@ class SettingsPanel {
 
             lightControlsFolder.add(keyLight, 'intensity', 0, 10, 0.1);
 
+            lightControlsFolder
+                .addColor(this, 'keyLightColour')
+                .listen()
+                .onChange((color) => {
+                    const hue = color.h.toFixed();
+                    const saturation = (color.s * 100).toFixed();
+                    const lightness = (color.v * 100).toFixed();
+
+                    keyLight.color = new Color(`hsl(${hue}, ${saturation}%, ${lightness}%)`);
+                    this.updateLight(keyLight, keyLightHelper);
+                });
+
             lightControlsFolder.open();
 
             // time
@@ -43,8 +56,17 @@ class SettingsPanel {
                 const sinValue = Math.sin(Math.PI * this.time);
 
                 keyLight.position.x = mapRange(this.time, 0, 1, -1500, 1500);
-                keyLight.position.y = mapRange(sinValue, 0, 1, 100, 700);
-                keyLight.intensity = mapRange(sinValue, 0, 1, 2, 10);
+                keyLight.position.y = mapRange(sinValue, 0, 1, 50, 700);
+                keyLight.intensity = mapRange(sinValue, 0, 1, 3, 10);
+
+                this.keyLightColour.h = mapRange(sinValue, 0, 1, 15, 50);
+                this.keyLightColour.s = mapRange(sinValue, 0, 1, 0.8, 0.25);
+                this.keyLightColour.v = mapRange(sinValue, 0, 1, 0.6, 0.85);
+
+                const hue = this.keyLightColour.h;
+                const saturation = (this.keyLightColour.s * 100).toFixed();
+                const lightness = (this.keyLightColour.v * 100).toFixed();
+                keyLight.color = new Color(`hsl(${hue}, ${saturation}%, ${lightness}%)`);
 
                 this.updateLight(keyLight, keyLightHelper);
             });
@@ -56,6 +78,10 @@ class SettingsPanel {
 
             outputFolder.add(keyLight.position, 'x').name('azimuth (x)').listen();
             outputFolder.add(keyLight.position, 'y').name('zenith (y)').listen();
+
+            // outputFolder.add(this.keyLightColour, 'h').name('hue').listen();
+            // outputFolder.add(this.keyLightColour, 's').name('saturation').listen();
+            // outputFolder.add(this.keyLightColour, 'v').name('value').listen();
 
             outputFolder.open();
         }
