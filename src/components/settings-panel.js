@@ -11,6 +11,8 @@ class SettingsPanel {
         this.gui = new dat.GUI();
 
         this.time = 0;
+        this.skyLightColour = { h: 195, s: 0.9, v: 0.8 };
+        this.bounceLightColour = { h: 27, s: 0.5, v: 0.6 };
         this.keyLightColour = { h: 50, s: 0.25, v: 0.9 };
 
         const mapRange = (value, x1, y1, x2, y2) => ((value - x1) * (y2 - x2)) / (y1 - x1) + x2;
@@ -21,10 +23,33 @@ class SettingsPanel {
         // cameraFolder.add(this.camera.position, 'z', 0, 1000);
         // cameraFolder.open();
 
+        const fillLight = this.scene.getObjectByName('skyLight');
+        if (fillLight) {
+            const fillControlsFolder = this.gui.addFolder('Fill light controls');
+
+            fillControlsFolder.add(fillLight, 'intensity', 0, 3, 0.1);
+
+            fillControlsFolder
+                .addColor(this, 'skyLightColour')
+                .listen()
+                .onChange((datHSV) => {
+                    fillLight.color = this.datHSVtoColor(datHSV);
+                });
+
+            fillControlsFolder
+                .addColor(this, 'bounceLightColour')
+                .listen()
+                .onChange((datHSV) => {
+                    fillLight.groundColor = this.datHSVtoColor(datHSV);
+                });
+
+            fillControlsFolder.open();
+        }
+
         const keyLight = this.scene.getObjectByName('keyLight');
         const keyLightHelper = this.scene.getObjectByName('keyLight-helper');
         if (keyLight) {
-            const lightControlsFolder = this.gui.addFolder('Light controls');
+            const lightControlsFolder = this.gui.addFolder('Key light controls');
 
             lightControlsFolder.add(keyLight.position, 'x', -1500, 1500).onChange(() => {
                 this.updateLight(keyLight, keyLightHelper);
@@ -38,53 +63,83 @@ class SettingsPanel {
             lightControlsFolder
                 .addColor(this, 'keyLightColour')
                 .listen()
-                .onChange((color) => {
-                    const hue = color.h.toFixed();
-                    const saturation = (color.s * 100).toFixed();
-                    const lightness = (color.v * 100).toFixed();
+                .onChange((datHSV) => {
+                    keyLight.color = this.datHSVtoColor(datHSV);
 
-                    keyLight.color = new Color(`hsl(${hue}, ${saturation}%, ${lightness}%)`);
                     this.updateLight(keyLight, keyLightHelper);
                 });
 
             lightControlsFolder.open();
+        }
 
-            // time
-            const timeFolder = this.gui.addFolder('Time of day');
+        // TODO: wait for loaded
+        // const ground = this.scene.getObjectByName('ground1');
+        // if (ground) {
+        //     const envControlsFolder = this.gui.addFolder('Env light controls');
 
-            timeFolder.add(this, 'time', 0, 1, 0.01).onChange(() => {
-                const sinValue = Math.sin(Math.PI * this.time);
+        //     const groundMaterial = ground.children[0].material;
+        //     envControlsFolder.add(groundMaterial, 'envMapIntensity', 0, 1, 0.1);
 
+        //     envControlsFolder.open();
+        // }
+
+        // time
+        const timeFolder = this.gui.addFolder('Time of day');
+
+        timeFolder.add(this, 'time', 0, 1, 0.01).onChange(() => {
+            const sinValue = Math.sin(Math.PI * this.time);
+
+            if (keyLight) {
                 keyLight.position.x = mapRange(this.time, 0, 1, -1500, 1500);
                 keyLight.position.y = mapRange(sinValue, 0, 1, 50, 700);
-                keyLight.intensity = mapRange(sinValue, 0, 1, 3, 10);
-
-                this.keyLightColour.h = mapRange(sinValue, 0, 1, 15, 50);
-                this.keyLightColour.s = mapRange(sinValue, 0, 1, 0.8, 0.25);
-                this.keyLightColour.v = mapRange(sinValue, 0, 1, 0.6, 0.85);
-
-                const hue = this.keyLightColour.h;
-                const saturation = (this.keyLightColour.s * 100).toFixed();
-                const lightness = (this.keyLightColour.v * 100).toFixed();
-                keyLight.color = new Color(`hsl(${hue}, ${saturation}%, ${lightness}%)`);
-
                 this.updateLight(keyLight, keyLightHelper);
-            });
 
-            timeFolder.open();
+                keyLight.intensity = mapRange(sinValue, 0, 1, 1, 9);
 
-            // output
-            const outputFolder = this.gui.addFolder('Sun position');
+                this.keyLightColour.h = mapRange(sinValue, 0, 1, 15, 45);
+                this.keyLightColour.s = mapRange(sinValue, 0, 1, 0.8, 0.3);
+                this.keyLightColour.v = mapRange(sinValue, 0, 1, 0.5, 0.8);
 
+                keyLight.color = this.datHSVtoColor(this.keyLightColour);
+            }
+
+            if (fillLight) {
+                fillLight.intensity = mapRange(sinValue, 0, 1, 0.3, 0);
+
+                this.skyLightColour.h = mapRange(sinValue, 0, 1, 230, 195);
+                this.skyLightColour.s = mapRange(sinValue, 0, 1, 0.6, 0.3);
+                this.skyLightColour.v = mapRange(sinValue, 0, 1, 0.5, 0.7);
+
+                fillLight.color = this.datHSVtoColor(this.skyLightColour);
+
+                // this.bounceLightColour.h = mapRange(sinValue, 0, 1, 240, 195);
+                this.bounceLightColour.s = mapRange(sinValue, 0, 1, 0.3, 0.5);
+                this.bounceLightColour.v = mapRange(sinValue, 0, 1, 0.2, 0.6);
+
+                fillLight.groundColor = this.datHSVtoColor(this.bounceLightColour);
+            }
+
+            const ground = this.scene.getObjectByName('ground1');
+            if (ground) {
+                const groundMaterial = ground.children[0].material;
+                groundMaterial.envMapIntensity = mapRange(sinValue, 0, 1, 0, 0.1);
+            }
+        });
+
+        timeFolder.open();
+
+        // output
+        const outputFolder = this.gui.addFolder('Sun position');
+
+        if (keyLight) {
             outputFolder.add(keyLight.position, 'x').name('azimuth (x)').listen();
             outputFolder.add(keyLight.position, 'y').name('zenith (y)').listen();
-
             // outputFolder.add(this.keyLightColour, 'h').name('hue').listen();
             // outputFolder.add(this.keyLightColour, 's').name('saturation').listen();
             // outputFolder.add(this.keyLightColour, 'v').name('value').listen();
-
-            outputFolder.open();
         }
+
+        outputFolder.open();
 
         // const debugFolder = this.gui.addFolder('Debug');
         // debugFolder.add(this, 'outputObjects');
@@ -92,6 +147,14 @@ class SettingsPanel {
         // debugFolder.add(window, 'innerHeight').listen();
         // debugFolder.add(window, 'devicePixelRatio').listen();
         // debugFolder.open();
+    }
+
+    datHSVtoColor(datHSV) {
+        const hue = datHSV.h.toFixed();
+        const saturation = (datHSV.s * 100).toFixed();
+        const lightness = (datHSV.v * 100).toFixed();
+
+        return new Color(`hsl(${hue}, ${saturation}%, ${lightness}%)`);
     }
 
     updateLight(keyLight, keyLightHelper) {
