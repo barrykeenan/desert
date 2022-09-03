@@ -23,6 +23,13 @@ class SettingsPanel {
         // cameraFolder.add(this.camera.position, 'z', 0, 1000);
         // cameraFolder.open();
 
+        const groundPlane = this.scene.getObjectByName('groundPlane');
+        const groundFolder = this.gui.addFolder('Ground folder');
+        groundFolder.add(groundPlane.position, 'y', -50, 50);
+        groundFolder.open();
+
+        // this.groundPlane.rootObject.position.y = -20;
+
         const fillLight = this.scene.getObjectByName('skyLight');
         if (fillLight) {
             const fillControlsFolder = this.gui.addFolder('Fill light controls');
@@ -125,6 +132,12 @@ class SettingsPanel {
                 this.bounceLightColour.v = mapRange(sinValue, 0, 1, 0.2, 0.6);
 
                 fillLight.groundColor = this.datHSVtoColor(this.bounceLightColour);
+            }
+
+            const groundPlane = this.scene.getObjectByName('groundPlane');
+            if (groundPlane) {
+                const groundPlaneMaterial = ground.children[0].material;
+                groundPlaneMaterial.envMapIntensity = mapRange(sinValue, 0, 1, 0, 0.1);
             }
 
             const ground = this.scene.getObjectByName('ground1');

@@ -20,6 +20,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { LoadingScreen } from './components/loading-screen.js';
 import { Lights } from './components/lights';
 
+import { GroundPlane } from './scene/groundPlane.js';
 import { Ground1 } from './scene/ground1.js';
 import { Cube } from './scene/cube.js';
 
@@ -81,27 +82,25 @@ class SceneManager {
         const helper = new GridHelper(500, 10);
         helper.material.transparent = true;
         helper.material.opacity = 0.25;
-        this.scene.add(helper);
+        // this.scene.add(helper);
 
         const axesHelper = new AxesHelper(10);
         this.scene.add(axesHelper);
 
+        this.groundPlane = new GroundPlane(this.textureLoader);
+        this.groundPlane.rootObject.position.y = -9;
+        this.scene.add(this.groundPlane.rootObject);
+
         this.ground1 = new Ground1(this.fbxLoader, this.textureLoader);
         this.scene.add(this.ground1.rootObject);
+
+        // TODO: adjust brightness of BG env texture
 
         // this.cube = new Cube(this.objLoader, this.textureLoader);
         // this.cube.rootObject.position.z = -100;
         // this.cube.rootObject.position.y = 50;
         // this.cube.rootObject.position.x = 100;
         // this.scene.add(this.cube.rootObject);
-
-        //Create a plane that receives shadows (but does not cast them)
-        // const planeGeometry = new PlaneGeometry(500, 500);
-        // planeGeometry.rotateX(-Math.PI / 2);
-        // const planeMaterial = new MeshStandardMaterial({ color: 0xcccccc });
-        // const plane = new Mesh(planeGeometry, planeMaterial);
-        // plane.receiveShadow = true;
-        // this.scene.add(plane);
 
         // this.shadowCatcher = new ShadowCatcher(this.textureLoader);
         // this.scene.add(this.shadowCatcher.rootObject);
