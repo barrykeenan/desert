@@ -20,7 +20,8 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { LoadingScreen } from './components/loading-screen.js';
 import { Lights } from './components/lights';
 
-import { GroundPlane } from './scene/groundPlane.js';
+import { Terrain } from './scene/terrain.js';
+import { MidGround } from './scene/midGround';
 import { Ground1 } from './scene/ground1.js';
 import { Cube } from './scene/cube.js';
 
@@ -66,8 +67,8 @@ class SceneManager {
         orbitControls.maxPolarAngle = MathUtils.degToRad(80); // 90 is horizontal to ground
 
         // Dolly limits.
-        orbitControls.minDistance = 30;
-        orbitControls.maxDistance = 200;
+        // orbitControls.minDistance = 30;
+        // orbitControls.maxDistance = 200;
 
         orbitControls.autoRotate = false;
         orbitControls.enableDamping = true;
@@ -87,9 +88,16 @@ class SceneManager {
         const axesHelper = new AxesHelper(10);
         this.scene.add(axesHelper);
 
-        this.groundPlane = new GroundPlane(this.textureLoader);
-        this.groundPlane.rootObject.position.y = -9;
-        this.scene.add(this.groundPlane.rootObject);
+        // BG terrain
+        this.terrain = new Terrain(this.textureLoader);
+        this.terrain.rootObject.position.y = -110;
+        this.terrain.rootObject.position.x = 450;
+        this.terrain.rootObject.position.z = -1200;
+        this.scene.add(this.terrain.rootObject);
+
+        this.midGround = new MidGround(this.textureLoader);
+        this.midGround.rootObject.position.y = -12.5;
+        this.scene.add(this.midGround.rootObject);
 
         this.ground1 = new Ground1(this.fbxLoader, this.textureLoader);
         this.scene.add(this.ground1.rootObject);

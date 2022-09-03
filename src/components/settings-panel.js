@@ -17,18 +17,24 @@ class SettingsPanel {
 
         const mapRange = (value, x1, y1, x2, y2) => ((value - x1) * (y2 - x2)) / (y1 - x1) + x2;
 
-        // const cameraFolder = this.gui.addFolder('Camera');
-        // cameraFolder.add(this.camera.position, 'x', -500, 500);
-        // cameraFolder.add(this.camera.position, 'y', 0, 500);
-        // cameraFolder.add(this.camera.position, 'z', 0, 1000);
-        // cameraFolder.open();
+        const cameraFolder = this.gui.addFolder('Camera');
+        cameraFolder.add(this.camera.position, 'x', -500, 500);
+        cameraFolder.add(this.camera.position, 'y', 0, 200);
+        cameraFolder.add(this.camera.position, 'z', 0, 1000);
+        cameraFolder.open();
 
-        const groundPlane = this.scene.getObjectByName('groundPlane');
-        const groundFolder = this.gui.addFolder('Ground folder');
-        groundFolder.add(groundPlane.position, 'y', -50, 50);
-        groundFolder.open();
-
-        // this.groundPlane.rootObject.position.y = -20;
+        // const groundFolder = this.gui.addFolder('Ground folder');
+        // const terrain = this.scene.getObjectByName('terrain');
+        // if (terrain) {
+        //     groundFolder.add(terrain.position, 'y', -200, 100).name('bg terrain y');
+        //     groundFolder.add(terrain.position, 'x', -5000, 5000).name('bg terrain x');
+        //     groundFolder.add(terrain.position, 'z', -5000, 5000).name('bg terrain z');
+        // }
+        // const groundPlane = this.scene.getObjectByName('midGround');
+        // if (groundPlane) {
+        //     groundFolder.add(groundPlane.position, 'y', -20, 5, 0.1).name('mid ground y');
+        // }
+        // groundFolder.open();
 
         const fillLight = this.scene.getObjectByName('skyLight');
         if (fillLight) {
@@ -134,10 +140,16 @@ class SettingsPanel {
                 fillLight.groundColor = this.datHSVtoColor(this.bounceLightColour);
             }
 
-            const groundPlane = this.scene.getObjectByName('groundPlane');
-            if (groundPlane) {
-                const groundPlaneMaterial = ground.children[0].material;
-                groundPlaneMaterial.envMapIntensity = mapRange(sinValue, 0, 1, 0, 0.1);
+            const terrain = this.scene.getObjectByName('terrain');
+            if (terrain) {
+                const terrainMaterial = terrain.material;
+                terrainMaterial.envMapIntensity = mapRange(sinValue, 0, 1, 0.0, 0.1);
+            }
+
+            const midGround = this.scene.getObjectByName('midGround');
+            if (midGround) {
+                const midGroundMaterial = midGround.material;
+                midGroundMaterial.envMapIntensity = mapRange(sinValue, 0, 1, 0, 0.1);
             }
 
             const ground = this.scene.getObjectByName('ground1');
