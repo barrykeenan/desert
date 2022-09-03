@@ -27,7 +27,7 @@ class SettingsPanel {
         if (fillLight) {
             const fillControlsFolder = this.gui.addFolder('Fill light controls');
 
-            fillControlsFolder.add(fillLight, 'intensity', 0, 3, 0.1);
+            fillControlsFolder.add(fillLight, 'intensity', 0, 3, 0.1).listen();
 
             fillControlsFolder
                 .addColor(this, 'skyLightColour')
@@ -43,7 +43,7 @@ class SettingsPanel {
                     fillLight.groundColor = this.datHSVtoColor(datHSV);
                 });
 
-            fillControlsFolder.open();
+            // fillControlsFolder.open();
         }
 
         const keyLight = this.scene.getObjectByName('keyLight');
@@ -51,12 +51,20 @@ class SettingsPanel {
         if (keyLight) {
             const lightControlsFolder = this.gui.addFolder('Key light controls');
 
-            lightControlsFolder.add(keyLight.position, 'x', -1500, 1500).onChange(() => {
-                this.updateLight(keyLight, keyLightHelper);
-            });
-            lightControlsFolder.add(keyLight.position, 'y', 0, 700).onChange(() => {
-                this.updateLight(keyLight, keyLightHelper);
-            });
+            lightControlsFolder
+                .add(keyLight.position, 'x', -1500, 1500)
+                .name('azimuth (x)')
+                .listen()
+                .onChange(() => {
+                    this.updateLight(keyLight, keyLightHelper);
+                });
+            lightControlsFolder
+                .add(keyLight.position, 'y', 0, 700)
+                .name('elevation (y)')
+                .listen()
+                .onChange(() => {
+                    this.updateLight(keyLight, keyLightHelper);
+                });
 
             lightControlsFolder.add(keyLight, 'intensity', 0, 10, 0.1);
 
@@ -69,7 +77,7 @@ class SettingsPanel {
                     this.updateLight(keyLight, keyLightHelper);
                 });
 
-            lightControlsFolder.open();
+            // lightControlsFolder.open();
         }
 
         // TODO: wait for loaded
@@ -104,7 +112,7 @@ class SettingsPanel {
             }
 
             if (fillLight) {
-                fillLight.intensity = mapRange(sinValue, 0, 1, 0.3, 0);
+                fillLight.intensity = mapRange(sinValue, 0, 1, 0.3, 0.1);
 
                 this.skyLightColour.h = mapRange(sinValue, 0, 1, 230, 195);
                 this.skyLightColour.s = mapRange(sinValue, 0, 1, 0.6, 0.3);
@@ -128,24 +136,15 @@ class SettingsPanel {
 
         timeFolder.open();
 
-        // output
-        const outputFolder = this.gui.addFolder('Sun position');
-
-        if (keyLight) {
-            outputFolder.add(keyLight.position, 'x').name('azimuth (x)').listen();
-            outputFolder.add(keyLight.position, 'y').name('zenith (y)').listen();
-            // outputFolder.add(this.keyLightColour, 'h').name('hue').listen();
-            // outputFolder.add(this.keyLightColour, 's').name('saturation').listen();
-            // outputFolder.add(this.keyLightColour, 'v').name('value').listen();
-        }
-
-        outputFolder.open();
-
+        // debug
         // const debugFolder = this.gui.addFolder('Debug');
         // debugFolder.add(this, 'outputObjects');
         // debugFolder.add(window, 'innerWidth').listen();
         // debugFolder.add(window, 'innerHeight').listen();
         // debugFolder.add(window, 'devicePixelRatio').listen();
+        // outputFolder.add(this.keyLightColour, 'h').name('hue').listen();
+        // outputFolder.add(this.keyLightColour, 's').name('saturation').listen();
+        // outputFolder.add(this.keyLightColour, 'v').name('value').listen();
         // debugFolder.open();
     }
 
