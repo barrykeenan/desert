@@ -64,6 +64,10 @@ class SceneManager {
         orbitControls.minPolarAngle = MathUtils.degToRad(30); // 0 is looking straight down.
         orbitControls.maxPolarAngle = MathUtils.degToRad(80); // 90 is horizontal to ground
 
+        // Dolly limits.
+        orbitControls.minDistance = 30;
+        orbitControls.maxDistance = 200;
+
         orbitControls.autoRotate = false;
         orbitControls.enableDamping = true;
 
