@@ -37,12 +37,15 @@ class Lights {
         const skyLight = new HemisphereLight();
         skyLight.name = 'skyLight';
 
-        // this.skyLightColour = { h: 195, s: 0.9, v: 0.8 };
-        // this.groundLightColour = { h: 27, s: 0.5, v: 0.6 };
+        // dawn
+        skyLight.color = new Color('hsl(230, 60%, 50%)');
+        skyLight.groundColor = new Color('hsl(27, 30%, 20%)');
+        skyLight.intensity = 0.3;
 
-        skyLight.color = new Color('hsl(195, 90%, 80%)');
-        skyLight.groundColor = new Color('hsl(27, 50%, 60%)');
-        skyLight.intensity = 0.1;
+        // day
+        // skyLight.color = new Color('hsl(195, 90%, 80%)');
+        // skyLight.groundColor = new Color('hsl(27, 50%, 60%)');
+        // skyLight.intensity = 0.1;
 
         this.scene.add(skyLight);
     }
@@ -51,10 +54,10 @@ class Lights {
         const keyLight = new DirectionalLight();
         keyLight.name = 'keyLight';
 
-        keyLight.color = new Color('rgb(255, 245, 200)');
-        keyLight.intensity = 9;
+        keyLight.color = new Color('hsl(15, 80%, 50%)');
+        keyLight.intensity = 1;
 
-        keyLight.position.set(-500, 250, -1000);
+        keyLight.position.set(-1500, 50, -1000);
         keyLight.target.position.set(0, 0, 0);
 
         keyLight.castShadow = true;

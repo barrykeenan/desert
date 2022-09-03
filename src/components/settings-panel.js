@@ -27,7 +27,7 @@ class SettingsPanel {
         if (fillLight) {
             const fillControlsFolder = this.gui.addFolder('Fill light controls');
 
-            fillControlsFolder.add(fillLight, 'intensity', 0, 3, 0.1).listen();
+            fillControlsFolder.add(fillLight, 'intensity', 0, 1, 0.1).listen();
 
             fillControlsFolder
                 .addColor(this, 'skyLightColour')
@@ -66,7 +66,7 @@ class SettingsPanel {
                     this.updateLight(keyLight, keyLightHelper);
                 });
 
-            lightControlsFolder.add(keyLight, 'intensity', 0, 10, 0.1);
+            lightControlsFolder.add(keyLight, 'intensity', 0, 10, 0.1).listen();
 
             lightControlsFolder
                 .addColor(this, 'keyLightColour')
