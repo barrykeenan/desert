@@ -5,16 +5,18 @@ import { mapRange } from './utils.js';
 
 class SettingsPanel {
     constructor(camera, sceneManager, orbitControls, objectPicker) {
+        this.gui = new dat.GUI();
+
         this.camera = camera;
         this.scene = sceneManager.scene;
         this.materials = sceneManager.materials;
-
-        this.gui = new dat.GUI();
 
         this.time = 0;
         this.skyLightColour = { h: 195, s: 0.9, v: 0.8 };
         this.bounceLightColour = { h: 27, s: 0.5, v: 0.6 };
         this.keyLightColour = { h: 50, s: 0.25, v: 0.9 };
+
+        this.initObjects();
 
         const cameraFolder = this.gui.addFolder('Camera');
         cameraFolder.add(this.camera.position, 'x', -500, 500);
@@ -22,37 +24,7 @@ class SettingsPanel {
         cameraFolder.add(this.camera.position, 'z', 0, 500);
         // cameraFolder.open();
 
-        this.layoutFolder = this.gui.addFolder('Layout folder');
-        // this.layoutFolder.open();
-
-        const terrain = this.scene.getObjectByName('terrain');
-        const terrainMesh = terrain.children[0];
-        const terrainMaterial = terrainMesh.material;
-        if (terrain) {
-            // this.layoutFolder.add(terrain.position, 'y', -500, 100).name('bg terrain y');
-            // this.layoutFolder.add(terrain.position, 'x', -5000, 5000).name('bg terrain x');
-            // this.layoutFolder.add(terrain.position, 'z', -5000, 5000).name('bg terrain z');
-
-            var terrainRotation = {
-                x: 0,
-                y: MathUtils.radToDeg(terrainMesh.rotation.y),
-                z: 0,
-            };
-            this.layoutFolder
-                .add(terrainRotation, 'y', 0, 360)
-                .name('BG rotation y')
-                .onChange((deg) => {
-                    terrainMesh.rotation.y = MathUtils.degToRad(deg);
-                });
-
-            this.layoutFolder.add(terrainMaterial, 'roughness', 0, 1, 0.01).name('BG roughness');
-        }
-
-        const midGround = this.scene.getObjectByName('midGround').children[0];
-        if (midGround) {
-            this.layoutFolder.add(midGround.position, 'y', -20, 5, 0.1).name('MG y');
-            this.layoutFolder.add(midGround.material, 'roughness', 0, 1, 0.01).name('MG roughness');
-        }
+        this.layout();
 
         const fillLight = this.scene.getObjectByName('skyLight');
         if (fillLight) {
@@ -74,9 +46,9 @@ class SettingsPanel {
 
             this.fillControlsFolder.add(fillLight, 'intensity', 0, 1, 0.1).listen().name('sky intensity');
 
-            this.fillControlsFolder.add(terrainMesh.material, 'envMapIntensity', 0, 1, 0.01).name('BG envMap');
+            this.fillControlsFolder.add(this.terrainMesh.material, 'envMapIntensity', 0, 1, 0.01).name('BG envMap');
 
-            this.fillControlsFolder.add(midGround.material, 'envMapIntensity', 0, 1, 0.01).name('MG envMap');
+            this.fillControlsFolder.add(this.midGroundMesh.material, 'envMapIntensity', 0, 1, 0.01).name('MG envMap');
 
             // this.fillControlsFolder.open();
         }
@@ -143,6 +115,64 @@ class SettingsPanel {
         debugFolder.open();
     }
 
+    initObjects() {
+        this.terrain = this.scene.getObjectByName('terrain');
+        this.terrainMesh = this.terrain?.children[0];
+
+        this.midGround = this.scene.getObjectByName('midGround');
+        this.midGroundMesh = this.midGround?.children[0];
+
+        this.foreGround = this.scene.getObjectByName('ground1');
+    }
+
+    layout() {
+        this.layoutFolder = this.gui.addFolder('Layout folder');
+        this.layoutFolder.open();
+
+        if (this.terrain) {
+            const terrainMaterial = this.terrainMesh.material;
+
+            // this.layoutFolder.add(terrain.position, 'y', -500, 100).name('bg terrain y');
+            // this.layoutFolder.add(terrain.position, 'x', -5000, 5000).name('bg terrain x');
+            // this.layoutFolder.add(terrain.position, 'z', -5000, 5000).name('bg terrain z');
+
+            var terrainRotation = {
+                x: 0,
+                y: MathUtils.radToDeg(this.terrainMesh.rotation.y),
+                z: 0,
+            };
+            this.layoutFolder
+                .add(terrainRotation, 'y', 0, 360)
+                .name('BG rotation y')
+                .onChange((deg) => {
+                    this.terrainMesh.rotation.y = MathUtils.degToRad(deg);
+                });
+
+            this.layoutFolder.add(terrainMaterial, 'roughness', 0, 1, 0.01).name('BG roughness');
+        }
+
+        if (this.midGround) {
+            this.layoutFolder.add(this.midGround.position, 'y', -20, 5, 0.1).name('MG y');
+            this.layoutFolder.add(this.midGroundMesh.material, 'roughness', 0, 1, 0.01).name('MG roughness');
+        }
+
+        if (this.foreGround) {
+            // const foreGroundMesh = this.foreGround.children[0];
+
+            var foreGroundRotation = {
+                x: 0,
+                y: MathUtils.radToDeg(this.foreGround.rotation.y),
+                z: 0,
+            };
+            this.layoutFolder
+                .add(foreGroundRotation, 'y', 0, 360)
+                .name('FG rotation y')
+                .onChange((deg) => {
+                    this.foreGround.rotation.y = MathUtils.degToRad(deg);
+                });
+        }
+    }
+
     timeSlider() {
         const timeFolder = this.gui.addFolder('Time of day');
 
@@ -150,13 +180,12 @@ class SettingsPanel {
             const sinValue = Math.sin(Math.PI * this.time);
 
             if (this.keyLight) {
-                // keyLight.position.x = mapRange(this.time, 0, 1, -1500, 1500);
                 this.keyLightGroup.rotation.y = mapRange(
                     this.time,
                     0,
                     1,
                     MathUtils.degToRad(-15),
-                    MathUtils.degToRad(-85)
+                    MathUtils.degToRad(-90)
                 );
 
                 this.keyLight.position.y = mapRange(sinValue, 0, 1, 50, 900);
