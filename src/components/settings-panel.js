@@ -153,7 +153,7 @@ class SettingsPanel {
 
         if (this.midGround) {
             this.layoutFolder.add(this.midGround.position, 'y', -20, 5, 0.1).name('MG y');
-            this.layoutFolder.add(this.midGroundMesh.material, 'roughness', 0, 1, 0.01).name('MG roughness');
+            this.layoutFolder.add(this.midGroundMesh.material, 'roughness', 0.5, 1.5, 0.01).name('MG roughness');
         }
 
         if (this.foreGround) {
@@ -188,7 +188,7 @@ class SettingsPanel {
                     MathUtils.degToRad(-90)
                 );
 
-                this.keyLight.position.y = mapRange(sinValue, 0, 1, 50, 900);
+                this.keyLight.position.y = mapRange(sinValue, 0, 1, 50, 700);
                 this.updateLight(this.keyLight, this.keyLightHelper);
 
                 this.keyLight.intensity = mapRange(sinValue, 0, 1, 1.5, 5);

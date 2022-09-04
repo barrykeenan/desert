@@ -19,7 +19,7 @@ class Ground1 {
         this.materials.default = new MeshStandardMaterial({
             normalMap: this.textureLoader.load('models/ground1/textures/vmoebgzqx_4K_Normal_LOD0.jpg'),
             roughnessMap: this.textureLoader.load('models/ground1/textures/vmoebgzqx_4K_Roughness.jpg'),
-            roughness: 0.8,
+            roughness: 0.85,
             map: this.textureLoader.load('models/ground1/textures/vmoebgzqx_4K_Albedo.jpg'),
             envMapIntensity: 0.0, // increases to 0.1 at midday
         });

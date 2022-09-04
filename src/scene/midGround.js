@@ -21,6 +21,7 @@ class MidGround {
 
             normalMap: this.loadTiledTexture('surfaces/sandy-ground/vl0macqn_4K_Normal.jpg', 10),
             roughnessMap: this.loadTiledTexture('surfaces/sandy-ground/vl0macqn_4K_Roughness.jpg', 10),
+            roughness: 1.05,
             // wireframe: true,
             // color: 0x666666,
             map: this.loadTiledTexture('surfaces/sandy-ground/vl0macqn_4K_Albedo.jpg', 10),
