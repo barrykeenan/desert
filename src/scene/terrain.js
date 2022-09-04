@@ -1,4 +1,4 @@
-import { PlaneGeometry, Mesh, MeshStandardMaterial, sRGBEncoding, RepeatWrapping } from 'three';
+import { PlaneGeometry, Mesh, MeshStandardMaterial, sRGBEncoding, MathUtils, Group } from 'three';
 
 class Terrain {
     constructor(textureLoader) {
@@ -34,14 +34,23 @@ class Terrain {
      * Create or load geometry
      */
     initGeo() {
+        this.rootObject = new Group();
+        this.rootObject.name = 'terrain';
+
         const planeGeometry = new PlaneGeometry(10000, 10000, 2000, 2000);
-        // planeGeometry.computeVertexNormals();
         planeGeometry.rotateX(-Math.PI / 2);
 
-        this.rootObject = new Mesh(planeGeometry, this.materials.default);
-        this.rootObject.name = 'terrain';
-        this.rootObject.castShadow = true;
-        this.rootObject.receiveShadow = true;
+        const mesh = new Mesh(planeGeometry, this.materials.default);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+
+        mesh.rotation.y = MathUtils.degToRad(204);
+
+        this.rootObject.add(mesh);
+
+        this.rootObject.position.y = -110;
+        this.rootObject.position.x = 1660;
+        this.rootObject.position.z = 340;
     }
 
     /**
