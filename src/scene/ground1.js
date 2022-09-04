@@ -1,4 +1,4 @@
-import { Group, MeshStandardMaterial, sRGBEncoding } from 'three';
+import { Group, MeshStandardMaterial, sRGBEncoding, MathUtils } from 'three';
 
 class Ground1 {
     constructor(geoLoader, textureLoader) {
@@ -42,6 +42,8 @@ class Ground1 {
 
             this.rootObject.add(mesh);
         });
+
+        this.rootObject.rotation.y = MathUtils.degToRad(303);
     }
 
     /**
