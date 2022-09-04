@@ -57,7 +57,7 @@ class SceneManager {
 
         // Dolly limits.
         orbitControls.minDistance = 30;
-        orbitControls.maxDistance = 200;
+        orbitControls.maxDistance = 180;
 
         orbitControls.autoRotate = false;
         orbitControls.enableDamping = true;
