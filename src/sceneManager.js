@@ -1,16 +1,4 @@
-import {
-    MathUtils,
-    Vector3,
-    Box3,
-    Scene,
-    TextureLoader,
-    LoadingManager,
-    GridHelper,
-    AxesHelper,
-    PlaneGeometry,
-    MeshStandardMaterial,
-    Mesh,
-} from 'three';
+import { MathUtils, Vector3, Box3, Scene, TextureLoader, LoadingManager, GridHelper, AxesHelper } from 'three';
 
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
@@ -18,6 +6,7 @@ import { EXRLoader } from 'three/examples/jsm/loaders/EXRLoader';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 import { LoadingScreen } from './components/loading-screen.js';
+import { SettingsPanel } from './components/settings-panel.js';
 import { Lights } from './components/lights';
 
 import { Terrain } from './scene/terrain.js';
@@ -63,12 +52,12 @@ class SceneManager {
         orbitControls.enablePan = false;
 
         // Vertical orbit limits.
-        orbitControls.minPolarAngle = MathUtils.degToRad(30); // 0 is looking straight down.
-        orbitControls.maxPolarAngle = MathUtils.degToRad(80); // 90 is horizontal to ground
+        orbitControls.minPolarAngle = MathUtils.degToRad(50); // 0 is looking straight down.
+        orbitControls.maxPolarAngle = MathUtils.degToRad(85); // 90 is horizontal to ground
 
         // Dolly limits.
-        // orbitControls.minDistance = 30;
-        // orbitControls.maxDistance = 200;
+        orbitControls.minDistance = 30;
+        orbitControls.maxDistance = 200;
 
         orbitControls.autoRotate = false;
         orbitControls.enableDamping = true;
@@ -90,15 +79,13 @@ class SceneManager {
 
         // BG terrain
         this.terrain = new Terrain(this.textureLoader);
-        this.terrain.rootObject.position.y = -110;
-        this.terrain.rootObject.position.x = 450;
-        this.terrain.rootObject.position.z = -1200;
         this.scene.add(this.terrain.rootObject);
 
+        // MG
         this.midGround = new MidGround(this.textureLoader);
-        this.midGround.rootObject.position.y = -12.5;
         this.scene.add(this.midGround.rootObject);
 
+        // FG
         this.ground1 = new Ground1(this.fbxLoader, this.textureLoader);
         this.scene.add(this.ground1.rootObject);
 
@@ -116,6 +103,7 @@ class SceneManager {
 
     initComponents() {
         this.loadingScreen = new LoadingScreen();
+        this.settingsPanel = new SettingsPanel(this.camera, this);
     }
 
     bindEvents() {
@@ -123,6 +111,8 @@ class SceneManager {
     }
 
     onLoad() {
+        this.settingsPanel.onLoad();
+
         // this.fitCameraToSelection(this.camera, this.orbitControls, this.ground1.rootObject.children);
 
         this.loadingScreen.hide();
