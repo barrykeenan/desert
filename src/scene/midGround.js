@@ -54,7 +54,7 @@ class MidGround {
 
         this.rootObject.add(mesh);
 
-        this.rootObject.position.y = -12.5;
+        this.rootObject.position.y = -8.5;
     }
 
     /**
