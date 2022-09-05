@@ -8,7 +8,7 @@ import { Vector3, PerspectiveCamera } from 'three';
 export function initCamera(initialPosition) {
     var position = initialPosition !== undefined ? initialPosition : new Vector3(0, 22, 50);
 
-    var camera = new PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 2000);
+    var camera = new PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000);
     camera.position.copy(position);
     camera.lookAt(new Vector3(0, 0, 0));
 
