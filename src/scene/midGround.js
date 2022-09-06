@@ -46,7 +46,7 @@ class MidGround {
         this.rootObject = new Group();
         this.rootObject.name = 'midGround';
 
-        const planeGeometry = new PlaneGeometry(3000, 3000, 2000, 2000);
+        const planeGeometry = new PlaneGeometry(3000, 3000, 1500, 1500);
         planeGeometry.rotateX(-Math.PI / 2);
 
         const mesh = new Mesh(planeGeometry, this.materials.default);
