@@ -37,7 +37,7 @@ class Terrain {
         this.rootObject = new Group();
         this.rootObject.name = 'terrain';
 
-        const planeGeometry = new PlaneGeometry(10000, 10000, 2000, 2000);
+        const planeGeometry = new PlaneGeometry(10000, 10000, 1000, 1000);
         planeGeometry.rotateX(-Math.PI / 2);
 
         const mesh = new Mesh(planeGeometry, this.materials.default);
