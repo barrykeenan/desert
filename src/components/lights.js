@@ -55,7 +55,7 @@ class Lights {
         const keyLight = new DirectionalLight();
         keyLight.name = 'keyLight';
 
-        keyLight.color = new Color('hsl(15, 80%, 50%)');
+        keyLight.color = new Color('hsl(10, 100%, 20%)');
         keyLight.intensity = 8;
 
         group.rotation.y = MathUtils.degToRad(-15);
@@ -85,14 +85,7 @@ class Lights {
         this.scene.add(group);
     }
 
-    update() {
-        if (this.spotLightHelper) {
-            this.spotLightHelper.update();
-        }
-        if (this.shadowHelper) {
-            this.shadowHelper.update();
-        }
-    }
+    update() {}
 }
 
 export { Lights };
