@@ -4,53 +4,55 @@ import * as dat from 'dat.gui';
 import { mapRange } from './utils.js';
 
 class SettingsPanel {
-    constructor(camera, sceneManager, orbitControls, objectPicker) {
+    constructor(renderer, camera, sceneManager, orbitControls, objectPicker) {
         this.gui = new dat.GUI();
 
+        this.renderer = renderer;
         this.camera = camera;
         this.scene = sceneManager.scene;
         this.materials = sceneManager.materials;
 
-        this.time = 0;
+        this.time = 0.03;
         this.skyLightColour = { h: 195, s: 0.9, v: 0.8 };
         this.bounceLightColour = { h: 27, s: 0.5, v: 0.6 };
         this.keyLightColour = { h: 50, s: 0.25, v: 0.9 };
 
         this.initObjects();
 
-        const cameraFolder = this.gui.addFolder('Camera');
-        cameraFolder.add(this.camera.position, 'x', -500, 500);
-        cameraFolder.add(this.camera.position, 'y', 0, 200);
-        cameraFolder.add(this.camera.position, 'z', 0, 500);
-        // cameraFolder.open();
+        this.cameraFolder();
 
-        this.layout();
+        // this.layout();
 
-        const fillLight = this.scene.getObjectByName('skyLight');
-        if (fillLight) {
-            this.fillControlsFolder = this.gui.addFolder('Fill light controls');
+        this.fillControlsFolder = this.gui.addFolder('Fill light controls');
 
+        if (this.fillLight) {
             this.fillControlsFolder
                 .addColor(this, 'skyLightColour')
                 .listen()
                 .onChange((datHSV) => {
-                    fillLight.color = this.datHSVtoColor(datHSV);
+                    this.fillLight.color = this.datHSVtoColor(datHSV);
                 });
 
             this.fillControlsFolder
                 .addColor(this, 'bounceLightColour')
                 .listen()
                 .onChange((datHSV) => {
-                    fillLight.groundColor = this.datHSVtoColor(datHSV);
+                    this.fillLight.groundColor = this.datHSVtoColor(datHSV);
                 });
 
-            this.fillControlsFolder.add(fillLight, 'intensity', 0, 1, 0.1).listen().name('sky intensity');
+            this.fillControlsFolder.add(this.fillLight, 'intensity', 0, 10, 0.1).listen().name('sky intensity');
 
-            this.fillControlsFolder.add(this.terrainMesh.material, 'envMapIntensity', 0, 1, 0.01).name('BG envMap');
+            this.fillControlsFolder
+                .add(this.terrainMesh.material, 'envMapIntensity', 0, 1, 0.01)
+                .listen()
+                .name('BG envMap');
 
-            this.fillControlsFolder.add(this.midGroundMesh.material, 'envMapIntensity', 0, 1, 0.01).name('MG envMap');
+            this.fillControlsFolder
+                .add(this.midGroundMesh.material, 'envMapIntensity', 0, 1, 0.01)
+                .listen()
+                .name('MG envMap');
 
-            // this.fillControlsFolder.open();
+            this.fillControlsFolder.open();
         }
 
         this.keyLightGroup = this.scene.getObjectByName('keyLightGroup');
@@ -79,15 +81,15 @@ class SettingsPanel {
                 .onChange(() => {
                     this.updateLight(this.keyLight, this.keyLightHelper);
                 });
-            lightControlsFolder
-                .add(this.keyLight.position, 'z', -3000, 3000)
-                .name('z')
-                .listen()
-                .onChange(() => {
-                    this.updateLight(this.keyLight, this.keyLightHelper);
-                });
+            // lightControlsFolder
+            //     .add(this.keyLight.position, 'z', -3000, 3000)
+            //     .name('z')
+            //     .listen()
+            //     .onChange(() => {
+            //         this.updateLight(this.keyLight, this.keyLightHelper);
+            //     });
 
-            lightControlsFolder.add(this.keyLight, 'intensity', 0, 10, 0.1).listen();
+            lightControlsFolder.add(this.keyLight, 'intensity', 0, 20, 0.1).listen();
 
             lightControlsFolder
                 .addColor(this, 'keyLightColour')
@@ -98,7 +100,7 @@ class SettingsPanel {
                     this.updateLight(this.keyLight, this.keyLightHelper);
                 });
 
-            // lightControlsFolder.open();
+            lightControlsFolder.open();
         }
 
         this.timeSlider();
@@ -123,6 +125,19 @@ class SettingsPanel {
         this.midGroundMesh = this.midGround?.children[0];
 
         this.foreGround = this.scene.getObjectByName('ground1');
+
+        this.fillLight = this.scene.getObjectByName('skyLight');
+    }
+
+    cameraFolder() {
+        const cameraFolder = this.gui.addFolder('Camera');
+
+        // cameraFolder.add(this.camera.position, 'x', -500, 500);
+        // cameraFolder.add(this.camera.position, 'y', 0, 200);
+        // cameraFolder.add(this.camera.position, 'z', 0, 500);
+        cameraFolder.add(this.renderer, 'toneMappingExposure', 0, 1, 0.01).listen().name('exposure');
+
+        cameraFolder.open();
     }
 
     layout() {
@@ -173,83 +188,90 @@ class SettingsPanel {
         }
     }
 
-    timeSlider() {
-        const timeFolder = this.gui.addFolder('Time of day');
-
-        timeFolder.add(this, 'time', 0, 1, 0.01).onChange(() => {
-            const sinValue = Math.sin(Math.PI * this.time);
-
-            if (this.keyLight) {
-                this.keyLightGroup.rotation.y = mapRange(
-                    this.time,
-                    0,
-                    1,
-                    MathUtils.degToRad(-15),
-                    MathUtils.degToRad(-90)
-                );
-
-                this.keyLight.position.y = mapRange(sinValue, 0, 1, 50, 700);
-                this.updateLight(this.keyLight, this.keyLightHelper);
-
-                this.keyLight.intensity = mapRange(sinValue, 0, 1, 1.5, 5);
-
-                this.keyLightColour.h = mapRange(sinValue, 0, 1, 15, 45);
-                this.keyLightColour.s = mapRange(sinValue, 0, 1, 0.8, 0.3);
-                this.keyLightColour.v = mapRange(sinValue, 0, 1, 0.5, 0.8);
-
-                this.keyLight.color = this.datHSVtoColor(this.keyLightColour);
-            }
-
-            if (this.fillLight) {
-                this.fillLight.intensity = mapRange(sinValue, 0, 1, 0.4, 0.0);
-
-                this.skyLightColour.h = mapRange(sinValue, 0, 1, 230, 195);
-                this.skyLightColour.s = mapRange(sinValue, 0, 1, 0.6, 0.3);
-                this.skyLightColour.v = mapRange(sinValue, 0, 1, 0.5, 0.7);
-
-                this.fillLight.color = this.datHSVtoColor(this.skyLightColour);
-
-                // this.bounceLightColour.h = mapRange(sinValue, 0, 1, 240, 195);
-                this.bounceLightColour.s = mapRange(sinValue, 0, 1, 0.3, 0.5);
-                this.bounceLightColour.v = mapRange(sinValue, 0, 1, 0.2, 0.6);
-
-                this.fillLight.groundColor = this.datHSVtoColor(this.bounceLightColour);
-            }
-
-            const terrain = this.scene.getObjectByName('terrain');
-            if (terrain) {
-                const terrainMesh = terrain.children[0];
-                const terrainMaterial = terrainMesh.material;
-                terrainMaterial.envMapIntensity = mapRange(sinValue, 0, 1, 0.0, 0.1);
-            }
-
-            const midGround = this.scene.getObjectByName('midGround');
-            if (midGround) {
-                const midGroundMesh = midGround.children[0];
-                const midGroundMaterial = midGroundMesh.material;
-                midGroundMaterial.envMapIntensity = mapRange(sinValue, 0, 1, 0.0, 0.1);
-            }
-
-            const foreGround = this.scene.getObjectByName('ground1');
-            if (foreGround) {
-                const foreGroundMesh = foreGround.children[0];
-                const foreGroundMaterial = foreGroundMesh.material;
-                foreGroundMaterial.envMapIntensity = mapRange(sinValue, 0, 1, 0.0, 0.5);
-            }
-        });
-
-        timeFolder.open();
-    }
-
     onLoad() {
         const foreGround = this.scene.getObjectByName('ground1');
         if (foreGround) {
             const foreGroundMesh = foreGround.children[0];
             const foreGroundMaterial = foreGroundMesh.material;
 
-            this.layoutFolder.add(foreGroundMaterial, 'roughness', 0, 1, 0.01).name('FG roughness');
-            this.fillControlsFolder.add(foreGroundMaterial, 'envMapIntensity', 0, 1, 0.01).name('FG envMap');
+            // this.layoutFolder.add(foreGroundMaterial, 'roughness', 0, 1, 0.01).name('FG roughness');
+            this.fillControlsFolder.add(foreGroundMaterial, 'envMapIntensity', 0, 1, 0.01).listen().name('FG envMap');
         }
+
+        this.updateTime();
+    }
+
+    timeSlider() {
+        const timeFolder = this.gui.addFolder('Time of day');
+
+        timeFolder.add(this, 'time', 0, 1, 0.001).onChange(() => {
+            this.updateTime();
+        });
+
+        timeFolder.open();
+    }
+
+    updateTime() {
+        const sinValue = Math.sin(Math.PI * this.time);
+
+        this.renderer.toneMappingExposure = sinValue;
+
+        if (this.keyLight) {
+            this.keyLightGroup.rotation.y = mapRange(this.time, 0, 1, MathUtils.degToRad(-15), MathUtils.degToRad(-90));
+
+            this.keyLight.position.y = mapRange(sinValue, 0, 1, 0, 500);
+            this.updateLight(this.keyLight, this.keyLightHelper);
+
+            this.keyLight.intensity = mapRange(sinValue, 0, 1, 8, 2);
+
+            this.keyLightColour.h = mapRange(sinValue, 0, 1, 10, 30);
+            this.keyLightColour.s = mapRange(sinValue, 0, 1, 0.9, 0.7);
+            this.keyLightColour.v = mapRange(sinValue, 0, 1, 0.3, 0.8);
+
+            this.keyLight.color = this.datHSVtoColor(this.keyLightColour);
+        }
+
+        if (this.fillLight) {
+            this.fillLight.intensity = mapRange(sinValue, 0, 1, 1, 0.1);
+
+            this.skyLightColour.h = mapRange(sinValue, 0, 1, 230, 195);
+            this.skyLightColour.s = mapRange(sinValue, 0, 1, 1.0, 1.0);
+            this.skyLightColour.v = mapRange(sinValue, 0, 1, 0.4, 1.0);
+
+            this.fillLight.color = this.datHSVtoColor(this.skyLightColour);
+
+            this.bounceLightColour.h = mapRange(sinValue, 0, 1, 27, 40);
+            this.bounceLightColour.s = mapRange(sinValue, 0, 1, 0.3, 0.5);
+            this.bounceLightColour.v = mapRange(sinValue, 0, 1, 0.2, 0.6);
+
+            this.fillLight.groundColor = this.datHSVtoColor(this.bounceLightColour);
+        }
+
+        const terrain = this.scene.getObjectByName('terrain');
+        if (terrain) {
+            const terrainMesh = terrain.children[0];
+            const terrainMaterial = terrainMesh.material;
+            terrainMaterial.envMapIntensity = mapRange(sinValue, 0, 1, 0.0, 0.1);
+        }
+
+        const midGround = this.scene.getObjectByName('midGround');
+        if (midGround) {
+            const midGroundMesh = midGround.children[0];
+            const midGroundMaterial = midGroundMesh.material;
+            midGroundMaterial.envMapIntensity = mapRange(sinValue, 0, 1, 0.0, 0.15);
+        }
+
+        const foreGround = this.scene.getObjectByName('ground1');
+        if (foreGround) {
+            const foreGroundMesh = foreGround.children[0];
+            const foreGroundMaterial = foreGroundMesh.material;
+            foreGroundMaterial.envMapIntensity = mapRange(sinValue, 0, 1, 0.0, 0.4);
+        }
+    }
+
+    updateLight(keyLight, keyLightHelper) {
+        keyLight.target.updateMatrixWorld();
+        keyLightHelper?.update();
     }
 
     datHSVtoColor(datHSV) {
@@ -258,11 +280,6 @@ class SettingsPanel {
         const lightness = (datHSV.v * 100).toFixed();
 
         return new Color(`hsl(${hue}, ${saturation}%, ${lightness}%)`);
-    }
-
-    updateLight(keyLight, keyLightHelper) {
-        keyLight.target.updateMatrixWorld();
-        keyLightHelper.update();
     }
 
     outputObjects() {

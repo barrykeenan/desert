@@ -103,7 +103,7 @@ class SceneManager {
 
     initComponents() {
         this.loadingScreen = new LoadingScreen();
-        this.settingsPanel = new SettingsPanel(this.camera, this);
+        this.settingsPanel = new SettingsPanel(this.renderer, this.camera, this);
     }
 
     bindEvents() {
