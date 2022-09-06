@@ -20,8 +20,9 @@ export function initRenderer(additionalProperties) {
     renderer.shadowMap.type = PCFSoftShadowMap;
     renderer.physicallyCorrectLights = true;
 
-    // renderer.toneMapping = ACESFilmicToneMapping;
-    // renderer.toneMappingExposure = 0.2;
+    renderer.toneMapping = ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 0.0;
+    // renderer.toneMappingExposure = 0.05;
     // renderer.gammaFactor = 2.2;
     renderer.outputEncoding = sRGBEncoding;
 
