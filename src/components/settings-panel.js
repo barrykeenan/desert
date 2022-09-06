@@ -16,6 +16,7 @@ class SettingsPanel {
         this.skyLightColour = { h: 195, s: 0.9, v: 0.8 };
         this.bounceLightColour = { h: 27, s: 0.5, v: 0.6 };
         this.keyLightColour = { h: 50, s: 0.25, v: 0.9 };
+        this.fogColor = { h: 240, s: 0.5, v: 0.3 };
 
         this.initObjects();
 
@@ -23,85 +24,10 @@ class SettingsPanel {
 
         // this.layout();
 
-        this.fillControlsFolder = this.gui.addFolder('Fill light controls');
+        this.fillLightsFolder();
+        this.keyLightsFolder();
 
-        if (this.fillLight) {
-            this.fillControlsFolder
-                .addColor(this, 'skyLightColour')
-                .listen()
-                .onChange((datHSV) => {
-                    this.fillLight.color = this.datHSVtoColor(datHSV);
-                });
-
-            this.fillControlsFolder
-                .addColor(this, 'bounceLightColour')
-                .listen()
-                .onChange((datHSV) => {
-                    this.fillLight.groundColor = this.datHSVtoColor(datHSV);
-                });
-
-            this.fillControlsFolder.add(this.fillLight, 'intensity', 0, 10, 0.1).listen().name('sky intensity');
-
-            this.fillControlsFolder
-                .add(this.terrainMesh.material, 'envMapIntensity', 0, 1, 0.01)
-                .listen()
-                .name('BG envMap');
-
-            this.fillControlsFolder
-                .add(this.midGroundMesh.material, 'envMapIntensity', 0, 1, 0.01)
-                .listen()
-                .name('MG envMap');
-
-            this.fillControlsFolder.open();
-        }
-
-        this.keyLightGroup = this.scene.getObjectByName('keyLightGroup');
-        this.keyLight = this.scene.getObjectByName('keyLight');
-        this.keyLightHelper = this.scene.getObjectByName('keyLight-helper');
-
-        if (this.keyLight) {
-            const lightControlsFolder = this.gui.addFolder('Key light controls');
-
-            var lightRotation = {
-                x: 0,
-                y: MathUtils.radToDeg(this.keyLightGroup.rotation.y),
-                z: 0,
-            };
-            lightControlsFolder
-                .add(lightRotation, 'y', -360, 0)
-                .name('azimuth (x)')
-                .onChange((deg) => {
-                    this.keyLightGroup.rotation.y = MathUtils.degToRad(deg);
-                    this.updateLight(this.keyLight, this.keyLightHelper);
-                });
-            lightControlsFolder
-                .add(this.keyLight.position, 'y', 0, 1500)
-                .name('elevation (y)')
-                .listen()
-                .onChange(() => {
-                    this.updateLight(this.keyLight, this.keyLightHelper);
-                });
-            // lightControlsFolder
-            //     .add(this.keyLight.position, 'z', -3000, 3000)
-            //     .name('z')
-            //     .listen()
-            //     .onChange(() => {
-            //         this.updateLight(this.keyLight, this.keyLightHelper);
-            //     });
-
-            lightControlsFolder.add(this.keyLight, 'intensity', 0, 20, 0.1).listen();
-
-            lightControlsFolder
-                .addColor(this, 'keyLightColour')
-                .listen()
-                .onChange((datHSV) => {
-                    this.keyLight.color = this.datHSVtoColor(datHSV);
-
-                    this.updateLight(this.keyLight, this.keyLightHelper);
-                });
-
-            lightControlsFolder.open();
-        }
+        this.fogFolder();
 
         this.timeSlider();
 
@@ -127,6 +53,10 @@ class SettingsPanel {
         this.foreGround = this.scene.getObjectByName('ground1');
 
         this.fillLight = this.scene.getObjectByName('skyLight');
+
+        this.keyLightGroup = this.scene.getObjectByName('keyLightGroup');
+        this.keyLight = this.scene.getObjectByName('keyLight');
+        this.keyLightHelper = this.scene.getObjectByName('keyLight-helper');
     }
 
     cameraFolder() {
@@ -186,6 +116,100 @@ class SettingsPanel {
                     this.foreGround.rotation.y = MathUtils.degToRad(deg);
                 });
         }
+    }
+
+    fillLightsFolder() {
+        this.fillControlsFolder = this.gui.addFolder('Fill light controls');
+
+        if (this.fillLight) {
+            this.fillControlsFolder
+                .addColor(this, 'skyLightColour')
+                .listen()
+                .onChange((datHSV) => {
+                    this.fillLight.color = this.datHSVtoColor(datHSV);
+                });
+
+            this.fillControlsFolder
+                .addColor(this, 'bounceLightColour')
+                .listen()
+                .onChange((datHSV) => {
+                    this.fillLight.groundColor = this.datHSVtoColor(datHSV);
+                });
+
+            this.fillControlsFolder.add(this.fillLight, 'intensity', 0, 10, 0.1).listen().name('sky intensity');
+
+            this.fillControlsFolder
+                .add(this.terrainMesh.material, 'envMapIntensity', 0, 1, 0.01)
+                .listen()
+                .name('BG envMap');
+
+            this.fillControlsFolder
+                .add(this.midGroundMesh.material, 'envMapIntensity', 0, 1, 0.01)
+                .listen()
+                .name('MG envMap');
+
+            // this.fillControlsFolder.open();
+        }
+    }
+
+    keyLightsFolder() {
+        if (this.keyLight) {
+            const lightControlsFolder = this.gui.addFolder('Key light controls');
+
+            var lightRotation = {
+                x: 0,
+                y: MathUtils.radToDeg(this.keyLightGroup.rotation.y),
+                z: 0,
+            };
+            lightControlsFolder
+                .add(lightRotation, 'y', -360, 0)
+                .name('azimuth (x)')
+                .onChange((deg) => {
+                    this.keyLightGroup.rotation.y = MathUtils.degToRad(deg);
+                    this.updateLight(this.keyLight, this.keyLightHelper);
+                });
+            lightControlsFolder
+                .add(this.keyLight.position, 'y', 0, 1500)
+                .name('elevation (y)')
+                .listen()
+                .onChange(() => {
+                    this.updateLight(this.keyLight, this.keyLightHelper);
+                });
+            // lightControlsFolder
+            //     .add(this.keyLight.position, 'z', -3000, 3000)
+            //     .name('z')
+            //     .listen()
+            //     .onChange(() => {
+            //         this.updateLight(this.keyLight, this.keyLightHelper);
+            //     });
+
+            lightControlsFolder.add(this.keyLight, 'intensity', 0, 20, 0.1).listen();
+
+            lightControlsFolder
+                .addColor(this, 'keyLightColour')
+                .listen()
+                .onChange((datHSV) => {
+                    this.keyLight.color = this.datHSVtoColor(datHSV);
+
+                    this.updateLight(this.keyLight, this.keyLightHelper);
+                });
+        }
+        // lightControlsFolder.open();
+    }
+
+    fogFolder() {
+        const fogFolder = this.gui.addFolder('Fog');
+
+        fogFolder.add(this.scene.fog, 'density', 0, 0.005, 0.00001);
+
+        fogFolder
+            .addColor(this, 'fogColor')
+            .listen()
+            .onChange((datHSV) => {
+                this.scene.fog.color = this.datHSVtoColor(datHSV);
+            });
+
+        fogFolder.open();
     }
 
     onLoad() {
@@ -267,6 +291,11 @@ class SettingsPanel {
             const foreGroundMaterial = foreGroundMesh.material;
             foreGroundMaterial.envMapIntensity = mapRange(sinValue, 0, 1, 0.0, 0.4);
         }
+
+        if (this.scene.fog) {
+            this.scene.fog.color.lerpColors(new Color('hsl(240, 50%, 30%)'), new Color('hsl(26, 40%, 20%)'), sinValue);
+            this.scene.fog.density = mapRange(sinValue, 0, 1, 0.00005, 0.00012);
+        }
     }
 
     updateLight(keyLight, keyLightHelper) {
@@ -275,6 +304,7 @@ class SettingsPanel {
     }
 
     datHSVtoColor(datHSV) {
+        // console.log('🚀 ~ datHSV', datHSV);
         const hue = datHSV.h.toFixed();
         const saturation = (datHSV.s * 100).toFixed();
         const lightness = (datHSV.v * 100).toFixed();

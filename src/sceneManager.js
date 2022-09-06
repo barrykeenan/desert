@@ -1,4 +1,16 @@
-import { MathUtils, Vector3, Box3, Scene, TextureLoader, LoadingManager, GridHelper, AxesHelper } from 'three';
+import {
+    MathUtils,
+    Vector3,
+    Box3,
+    Scene,
+    TextureLoader,
+    LoadingManager,
+    GridHelper,
+    AxesHelper,
+    Fog,
+    FogExp2,
+    Color,
+} from 'three';
 
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
@@ -99,6 +111,11 @@ class SceneManager {
 
         // this.shadowCatcher = new ShadowCatcher(this.textureLoader);
         // this.scene.add(this.shadowCatcher.rootObject);
+
+        // Fog
+        this.scene.fog = new FogExp2();
+        this.scene.fog.color = new Color('hsl(240, 50%, 30%)');
+        this.scene.fog.density = 0.00005;
     }
 
     initComponents() {
